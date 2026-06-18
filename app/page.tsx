@@ -1,101 +1,100 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
+import { NAV } from "@/components/nav";
+import { IconArrow } from "@/components/ui/icons";
+import { CAMPAIGN_PERIOD } from "@/lib/metas";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const platforms = NAV.find((g) => g.title === "Plataformas")!.items;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-surface">
+      {/* Decorative gradient blobs */}
+      <div className="pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-gov-blue/10 blur-3xl" />
+      <div className="pointer-events-none absolute -right-40 top-20 h-96 w-96 rounded-full bg-gov-red/10 blur-3xl" />
+      <div className="grid-bg absolute inset-0 opacity-60" />
+
+      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
+        {/* Top bar */}
+        <header className="flex items-center justify-between">
+          <Logo />
+          <span className="hidden text-xs font-semibold uppercase tracking-[0.15em] text-muted sm:block">
+            Governo do Estado da Bahia
+          </span>
+        </header>
+
+        {/* Hero */}
+        <section className="flex flex-1 flex-col justify-center py-12">
+          <div className="max-w-3xl">
+            <span className="chip bg-white text-gov-blue shadow-card">
+              <span className="h-2 w-2 rounded-full bg-gov-green" />
+              Campanha ativa · {CAMPAIGN_PERIOD.inicio} a {CAMPAIGN_PERIOD.fim}
+            </span>
+            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-6xl">
+              Painel de Mídia
+              <br />
+              <span className="bg-gradient-to-r from-gov-blue via-gov-sky to-gov-red bg-clip-text text-transparent">
+                Regional
+              </span>
+            </h1>
+            <p className="mt-5 max-w-xl text-base text-muted sm:text-lg">
+              Acompanhe em tempo real a performance da campanha da{" "}
+              <strong className="text-ink">
+                Secretaria de Comunicação Social
+              </strong>{" "}
+              nas Regiões 8, 12 e 14 — em cinco plataformas de mídia.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="group inline-flex items-center gap-2 rounded-full bg-gov-blue px-6 py-3.5 text-sm font-bold text-white shadow-float transition hover:bg-gov-navy"
+              >
+                Acessar o dashboard
+                <IconArrow className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                href="/dashboard/metas"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-ink shadow-card transition hover:bg-slate-50"
+              >
+                Ver progresso de metas
+              </Link>
+            </div>
+          </div>
+
+          {/* Platform quick cards */}
+          <div className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {platforms.map((p) => {
+              const Icon = p.icon;
+              return (
+                <Link
+                  key={p.href}
+                  href={p.href}
+                  className="card card-pad group transition hover:-translate-y-1 hover:shadow-float"
+                >
+                  <span
+                    className="flex h-10 w-10 items-center justify-center rounded-xl"
+                    style={{ background: `${p.color}14`, color: p.color }}
+                  >
+                    <Icon />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold text-ink">
+                    {p.label}
+                  </p>
+                  <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted transition group-hover:text-gov-blue">
+                    Abrir <IconArrow width={13} height={13} />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        <footer className="border-t border-slate-200 pt-5 text-xs text-muted">
+          SECOM — Secretaria de Comunicação Social · Governo do Estado da Bahia ·
+          Período {CAMPAIGN_PERIOD.inicio}–{CAMPAIGN_PERIOD.fim}
+        </footer>
+      </div>
+    </main>
   );
 }
