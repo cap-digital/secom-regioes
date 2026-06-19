@@ -6,36 +6,35 @@ export interface MetaProgress {
   platform: PlatformId;
   item: MetaItem;
   actual: number;
+  actualInvest: number; // realized investment for this meta
   pct: number; // 0..1+ (can exceed 1)
 }
 
-// Pull the actual achieved value for a meta item from normalized rows.
-function actualFor(
+// Rows that back a given meta item (Google is split into two goals by strategy).
+function scopedRows(
   item: MetaItem,
   platform: PlatformId,
   region: string,
   data: Record<PlatformId, NormalizedRow[]>
-): number {
+): NormalizedRow[] {
   const rows = (data[platform] ?? []).filter((r) => r.region === region);
-
-  // Google carries two distinct goals split by strategy.
-  let scoped = rows;
   if (platform === "google") {
-    if (item.unit === "impressions") {
-      scoped = rows.filter((r) => r.strategy.toLowerCase().includes("alcance"));
-    } else {
-      scoped = rows.filter((r) =>
-        r.strategy.toLowerCase().includes("visualiza")
-      );
-    }
+    // Match on the data strategy, decoupled from the displayed unit.
+    const ds =
+      item.dataStrategy ?? (item.unit === "impressions" ? "alcance" : "visualiza");
+    return rows.filter((r) => r.strategy.toLowerCase().includes(ds));
   }
+  return rows;
+}
 
+// Pull the actual achieved value for a meta item from normalized rows.
+function actualFor(rows: NormalizedRow[], item: MetaItem): number {
   const key: Record<MetaUnit, keyof NormalizedRow> = {
     impressions: "impressions",
     views: "views",
     completes: "q100",
   };
-  return scoped.reduce((s, r) => s + (r[key[item.unit]] as number), 0);
+  return rows.reduce((s, r) => s + (r[key[item.unit]] as number), 0);
 }
 
 export function computeProgress(
@@ -47,12 +46,15 @@ export function computeProgress(
     if (regionFilter !== "ALL" && region !== regionFilter) continue;
     for (const pm of METAS[region]) {
       for (const item of pm.items) {
-        const actual = actualFor(item, pm.platform, region, data);
+        const rows = scopedRows(item, pm.platform, region, data);
+        const actual = actualFor(rows, item);
+        const actualInvest = rows.reduce((s, r) => s + r.investimento, 0);
         out.push({
           region,
           platform: pm.platform,
           item,
           actual,
+          actualInvest,
           pct: item.goal > 0 ? actual / item.goal : 0,
         });
       }

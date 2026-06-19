@@ -11,6 +11,10 @@ export interface MetaItem {
   unitLabel: string; // "Impressões" | "Visualizações" | "Escutas completas"
   goal: number;
   investimento: number;
+  // For Google (two goals per region) the data strategy that scopes this item.
+  // Decouples row matching from `unit` so a "Visualização" meta can still map
+  // to the underlying "Alcance" strategy rows (YouTube Pulável).
+  dataStrategy?: "alcance" | "visualiza";
 }
 
 export interface PlatformMeta {
@@ -30,8 +34,8 @@ export const METAS: MetasByRegion = {
     {
       platform: "google",
       items: [
-        { label: "Alcance — YouTube Pulável", unit: "impressions", unitLabel: "Impressões", goal: 2456140, investimento: 15400 },
-        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 91667, investimento: 11000 },
+        { label: "Visualização — YouTube Pulável", unit: "views", unitLabel: "Visualizações", goal: 110000, investimento: 15400, dataStrategy: "alcance" },
+        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 91667, investimento: 11000, dataStrategy: "visualiza" },
       ],
     },
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 5500, investimento: 11000 }] },
@@ -43,8 +47,8 @@ export const METAS: MetasByRegion = {
     {
       platform: "google",
       items: [
-        { label: "Alcance — YouTube Pulável", unit: "impressions", unitLabel: "Impressões", goal: 1451356, investimento: 9100 },
-        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 54167, investimento: 6500 },
+        { label: "Visualização — YouTube Pulável", unit: "views", unitLabel: "Visualizações", goal: 65000, investimento: 9100, dataStrategy: "alcance" },
+        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 54167, investimento: 6500, dataStrategy: "visualiza" },
       ],
     },
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 3250, investimento: 6500 }] },
@@ -56,8 +60,8 @@ export const METAS: MetasByRegion = {
     {
       platform: "google",
       items: [
-        { label: "Alcance — YouTube Pulável", unit: "impressions", unitLabel: "Impressões", goal: 1674641, investimento: 10500 },
-        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 62500, investimento: 7500 },
+        { label: "Visualização — YouTube Pulável", unit: "views", unitLabel: "Visualizações", goal: 75000, investimento: 10500, dataStrategy: "alcance" },
+        { label: "Visualização — YouTube Shorts", unit: "views", unitLabel: "Visualizações", goal: 62500, investimento: 7500, dataStrategy: "visualiza" },
       ],
     },
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 3750, investimento: 7500 }] },

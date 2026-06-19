@@ -8,7 +8,7 @@ import { LoadingState, ErrorState } from "@/components/ui/StateViews";
 import { ChartCard, REGION_COLORS } from "@/components/ui/charts";
 import { MetaBar, RadialGauge } from "@/components/charts/Progress";
 import { IconTarget } from "@/components/ui/icons";
-import { computeProgress } from "@/lib/metasCalc";
+import { computeProgress, capInvest } from "@/lib/metasCalc";
 import { PLATFORM_LABEL, CAMPAIGN_PERIOD } from "@/lib/metas";
 import { fmtBRL, fmtPct, fmtInt } from "@/lib/format";
 import { PlatformId } from "@/lib/types";
@@ -30,23 +30,23 @@ export default function MetasPage() {
   const c = useMemo(() => {
     if (!data) return null;
     const progress = computeProgress(data, region);
-    // Overall: média de atingimento (apenas metas com veiculação ativa).
-    // Entrega pode passar de 100% — sobre-entrega é positivo e deve aparecer.
-    const withData = progress.filter((p) => p.platform !== "pushNotification");
-    const avgPct =
-      withData.length > 0
-        ? withData.reduce((s, p) => s + p.pct, 0) / withData.length
-        : 0;
     const plannedInv = progress.reduce((s, p) => s + p.item.investimento, 0);
+    // Realized investment = soma do Investimento de todas as linhas veiculadas
+    // (mesma base da visão geral). Capada ao planejado para não exibir overspend.
+    const actualInv = capInvest(
+      progress.reduce((s, p) => s + p.actualInvest, 0),
+      plannedInv
+    );
+    const investPct = plannedInv > 0 ? actualInv / plannedInv : 0;
     // group by region
     const regions = Array.from(new Set(progress.map((p) => p.region)));
-    return { progress, avgPct, plannedInv, regions };
+    return { progress, plannedInv, actualInv, investPct, regions };
   }, [data, region]);
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState message={error} />;
   if (!c) return null;
-  const { progress, avgPct, plannedInv, regions } = c;
+  const { progress, plannedInv, actualInv, investPct, regions } = c;
 
   return (
     <div className="space-y-5">
@@ -59,14 +59,14 @@ export default function MetasPage() {
       />
 
       <div className="grid gap-3 lg:grid-cols-3">
-        <ChartCard title="Atingimento médio" subtitle="Média entre as metas com veiculação ativa">
+        <ChartCard title="Investimento veiculado" subtitle="Realizado sobre o investimento planejado">
           <div className="flex items-center justify-center gap-5 py-2">
-            <RadialGauge pct={avgPct} size={140} stroke={13} color="#168821" value={fmtPct(avgPct, 0)} label="da meta" />
+            <RadialGauge pct={investPct} size={140} stroke={13} color="#168821" value={fmtPct(investPct, 0)} label="do planejado" />
             <div className="space-y-2 text-sm">
-              <p className="text-muted">
-                Investimento planejado
+              <p>
+                <span className="text-lg font-bold text-ink">{fmtBRL(actualInv)}</span>
                 <br />
-                <span className="text-lg font-bold text-ink">{fmtBRL(plannedInv)}</span>
+                <span className="text-muted">de {fmtBRL(plannedInv)}</span>
               </p>
             </div>
           </div>
@@ -125,12 +125,21 @@ export default function MetasPage() {
                     </div>
                     <MetaBar
                       label={p.item.label}
-                      sublabel={`${fmtInt(p.item.goal)} ${p.item.unitLabel.toLowerCase()} · ${fmtBRL(p.item.investimento)}`}
+                      sublabel={`Meta de ${fmtInt(p.item.goal)} ${p.item.unitLabel.toLowerCase()}`}
                       actual={noData ? 0 : p.actual}
                       goal={p.item.goal}
                       unit={p.item.unitLabel.toLowerCase()}
                       color={platformColor(p.platform)}
                     />
+                    <div className="mt-3">
+                      <MetaBar
+                        label="Investimento"
+                        actual={noData ? 0 : capInvest(p.actualInvest, p.item.investimento)}
+                        goal={p.item.investimento}
+                        currency
+                        color="#64748b"
+                      />
+                    </div>
                   </div>
                 );
               })}

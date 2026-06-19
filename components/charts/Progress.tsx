@@ -1,6 +1,6 @@
 "use client";
 
-import { fmtInt, fmtPct } from "@/lib/format";
+import { fmtInt, fmtPct, fmtBRL } from "@/lib/format";
 
 // Linear meta progress bar.
 export function MetaBar({
@@ -10,6 +10,7 @@ export function MetaBar({
   goal,
   unit,
   color = "#1351B4",
+  currency = false,
 }: {
   label: string;
   sublabel?: string;
@@ -17,7 +18,9 @@ export function MetaBar({
   goal: number;
   unit?: string;
   color?: string;
+  currency?: boolean;
 }) {
+  const fmtVal = (n: number) => (currency ? fmtBRL(n) : `${fmtInt(n)}${unit ? ` ${unit}` : ""}`);
   // Delivery metrics (visualizações, escutas, impressões…) may exceed 100% —
   // over-delivery is good news and should be shown. Only money is capped.
   const pct = goal > 0 ? actual / goal : 0;
@@ -49,12 +52,8 @@ export function MetaBar({
         />
       </div>
       <div className="mt-1 flex justify-between text-[11px] text-muted">
-        <span>
-          {fmtInt(actual)} {unit}
-        </span>
-        <span>
-          Meta {fmtInt(goal)} {unit}
-        </span>
+        <span>{fmtVal(actual)}</span>
+        <span>Meta {fmtVal(goal)}</span>
       </div>
     </div>
   );
