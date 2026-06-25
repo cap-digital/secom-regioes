@@ -10,6 +10,11 @@ export interface MetaProgress {
   pct: number; // 0..1+ (can exceed 1)
 }
 
+// Accent-insensitive, lowercased strategy string for matching the `Estratégia `
+// data column ("Visualização Pulável" / "Visualização Shorts").
+export const normStrategy = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
 // Rows that back a given meta item (Google is split into two goals by strategy).
 function scopedRows(
   item: MetaItem,
@@ -18,11 +23,10 @@ function scopedRows(
   data: Record<PlatformId, NormalizedRow[]>
 ): NormalizedRow[] {
   const rows = (data[platform] ?? []).filter((r) => r.region === region);
-  if (platform === "google") {
-    // Match on the data strategy, decoupled from the displayed unit.
-    const ds =
-      item.dataStrategy ?? (item.unit === "impressions" ? "alcance" : "visualiza");
-    return rows.filter((r) => r.strategy.toLowerCase().includes(ds));
+  if (platform === "google" && item.dataStrategy) {
+    // Match the `Estratégia ` value ("Visualização Pulável" / "...Shorts"),
+    // accent-insensitive, decoupled from the displayed unit.
+    return rows.filter((r) => normStrategy(r.strategy).includes(item.dataStrategy!));
   }
   return rows;
 }

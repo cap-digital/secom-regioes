@@ -31,7 +31,7 @@ import {
   REGIONS,
   REGION_SHORT,
 } from "@/lib/metrics";
-import { plannedInvestimento, capInvest } from "@/lib/metasCalc";
+import { plannedInvestimento, capInvest, normStrategy } from "@/lib/metasCalc";
 import { METAS } from "@/lib/metas";
 import {
   fmtBRL,
@@ -74,16 +74,16 @@ export default function GooglePage() {
     const byRegion = REGIONS.map((reg) => {
       const rr = sumRows(scoped.filter((r) => r.region === reg));
       const items = METAS[reg]?.find((p) => p.platform === "google")?.items ?? [];
-      const alcBudget = items.find((i) => i.unit === "impressions")?.investimento ?? 0;
-      const visBudget = items.find((i) => i.unit === "views")?.investimento ?? 0;
-      const alc = scoped.filter((r) => r.region === reg && r.strategy.toLowerCase().includes("alcance"));
-      const vis = scoped.filter((r) => r.region === reg && r.strategy.toLowerCase().includes("visualiza"));
+      const pulBudget = items.find((i) => i.dataStrategy === "pulavel")?.investimento ?? 0;
+      const shortsBudget = items.find((i) => i.dataStrategy === "shorts")?.investimento ?? 0;
+      const pul = scoped.filter((r) => r.region === reg && normStrategy(r.strategy).includes("pulavel"));
+      const shorts = scoped.filter((r) => r.region === reg && normStrategy(r.strategy).includes("shorts"));
       const regInvest = capInvest(rr.investimento, plannedInvestimento("google", reg));
       return {
         name: REGION_SHORT[reg],
         full: reg,
-        Alcance: capInvest(sumRows(alc).investimento, alcBudget),
-        Visualização: capInvest(sumRows(vis).investimento, visBudget),
+        Pulável: capInvest(sumRows(pul).investimento, pulBudget),
+        Shorts: capInvest(sumRows(shorts).investimento, shortsBudget),
         impressions: rr.impressions,
         views: rr.views,
         ctr: ctr(rr),
@@ -111,7 +111,7 @@ export default function GooglePage() {
       <PageHeader
         eyebrow="Plataforma"
         title="Google"
-        description="YouTube Pulável (Alcance) e YouTube Shorts (Visualização)"
+        description="Visualização — YouTube Pulável e YouTube Shorts"
         icon={<IconPlay />}
         accent="#E52207"
         right={
@@ -179,7 +179,7 @@ export default function GooglePage() {
             {/* Stacked bar by region & strategy */}
             <ChartCard
               title="Investimento por região e estratégia"
-              subtitle="Alcance (Pulável) vs Visualização (Shorts)"
+              subtitle="Visualização — Pulável vs Shorts"
             >
               <ResponsiveContainer width="100%" height={280}>
                 <ComposedChart data={byRegion} margin={{ left: -8, right: 8, top: 8 }}>
@@ -188,8 +188,8 @@ export default function GooglePage() {
                   <YAxis tickFormatter={(v) => fmtCompact(v as number)} axisLine={false} tickLine={false} tick={AXIS.tick} width={56} />
                   <Tooltip content={<ChartTooltip formatter={(v) => fmtBRL(v)} />} cursor={{ fill: "#f4f6fb" }} />
                   <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                  <Bar dataKey="Alcance" stackId="a" fill="#1351B4" radius={[0, 0, 0, 0]} maxBarSize={56} />
-                  <Bar dataKey="Visualização" stackId="a" fill="#E52207" radius={[6, 6, 0, 0]} maxBarSize={56} />
+                  <Bar dataKey="Pulável" stackId="a" fill="#1351B4" radius={[0, 0, 0, 0]} maxBarSize={56} />
+                  <Bar dataKey="Shorts" stackId="a" fill="#E52207" radius={[6, 6, 0, 0]} maxBarSize={56} />
                 </ComposedChart>
               </ResponsiveContainer>
             </ChartCard>
