@@ -3,7 +3,7 @@
 
 export const CAMPAIGN_PERIOD = { inicio: "12/06", fim: "30/06" };
 
-export type MetaUnit = "impressions" | "views" | "completes";
+export type MetaUnit = "impressions" | "views" | "completes" | "disparos";
 
 export interface MetaItem {
   label: string; // strategy / sub-goal label
@@ -41,7 +41,7 @@ export const METAS: MetasByRegion = {
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 5500, investimento: 11000 }] },
     { platform: "spotify", items: [{ label: "Escutas", unit: "completes", unitLabel: "Escutas completas", goal: 6600, investimento: 13200 }] },
     { platform: "programaticaDeVideo", items: [{ label: "Visualização — Programática", unit: "views", unitLabel: "Visualizações", goal: 102667, investimento: 15400 }] },
-    { platform: "pushNotification", items: [{ label: "Alcance — Push Notification", unit: "impressions", unitLabel: "Impressões", goal: 9429, investimento: 13200 }] },
+    { platform: "pushNotification", items: [{ label: "Disparos — Push Notification", unit: "disparos", unitLabel: "Disparos", goal: 9429, investimento: 13200 }] },
   ],
   "REGIÃO 12": [
     {
@@ -54,7 +54,7 @@ export const METAS: MetasByRegion = {
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 3250, investimento: 6500 }] },
     { platform: "spotify", items: [{ label: "Escutas", unit: "completes", unitLabel: "Escutas completas", goal: 3900, investimento: 7800 }] },
     { platform: "programaticaDeVideo", items: [{ label: "Visualização — Programática", unit: "views", unitLabel: "Visualizações", goal: 60667, investimento: 9100 }] },
-    { platform: "pushNotification", items: [{ label: "Alcance — Push Notification", unit: "impressions", unitLabel: "Impressões", goal: 5571, investimento: 7800 }] },
+    { platform: "pushNotification", items: [{ label: "Disparos — Push Notification", unit: "disparos", unitLabel: "Disparos", goal: 5571, investimento: 7800 }] },
   ],
   "REGIÃO 14": [
     {
@@ -67,7 +67,7 @@ export const METAS: MetasByRegion = {
     { platform: "tvConectada", items: [{ label: "Visualização — TV Conectada", unit: "views", unitLabel: "Visualizações", goal: 3750, investimento: 7500 }] },
     { platform: "spotify", items: [{ label: "Escutas", unit: "completes", unitLabel: "Escutas completas", goal: 4500, investimento: 9000 }] },
     { platform: "programaticaDeVideo", items: [{ label: "Visualização — Programática", unit: "views", unitLabel: "Visualizações", goal: 70000, investimento: 10500 }] },
-    { platform: "pushNotification", items: [{ label: "Alcance — Push Notification", unit: "impressions", unitLabel: "Impressões", goal: 6429, investimento: 9000 }] },
+    { platform: "pushNotification", items: [{ label: "Disparos — Push Notification", unit: "disparos", unitLabel: "Disparos", goal: 6429, investimento: 9000 }] },
   ],
 };
 

@@ -74,7 +74,7 @@ export default function MetasPage() {
 
         <Kpi
           label="Metas monitoradas"
-          value={progress.filter((p) => p.platform !== "pushNotification").length}
+          value={progress.length}
           hint="objetivos com dados de veiculação"
           accent="blue"
           className="lg:col-span-1"
@@ -105,44 +105,36 @@ export default function MetasPage() {
             }
           >
             <div className="grid gap-x-8 gap-y-5 md:grid-cols-2">
-              {items.map((p, i) => {
-                const noData = p.platform === "pushNotification";
-                return (
-                  <div key={i} className={noData ? "opacity-60" : ""}>
-                    <div className="mb-1.5 flex items-center gap-2">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ background: platformColor(p.platform) }}
-                      />
-                      <span className="text-xs font-bold uppercase tracking-wide text-muted">
-                        {PLATFORM_LABEL[p.platform]}
-                      </span>
-                      {noData && (
-                        <span className="ml-auto text-[10px] font-semibold text-amber-600">
-                          aguardando dados
-                        </span>
-                      )}
-                    </div>
-                    <MetaBar
-                      label={p.item.label}
-                      sublabel={`Meta de ${fmtInt(p.item.goal)} ${p.item.unitLabel.toLowerCase()}`}
-                      actual={noData ? 0 : p.actual}
-                      goal={p.item.goal}
-                      unit={p.item.unitLabel.toLowerCase()}
-                      color={platformColor(p.platform)}
+              {items.map((p, i) => (
+                <div key={i}>
+                  <div className="mb-1.5 flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ background: platformColor(p.platform) }}
                     />
-                    <div className="mt-3">
-                      <MetaBar
-                        label="Investimento"
-                        actual={noData ? 0 : capInvest(p.actualInvest, p.item.investimento)}
-                        goal={p.item.investimento}
-                        currency
-                        color="#64748b"
-                      />
-                    </div>
+                    <span className="text-xs font-bold uppercase tracking-wide text-muted">
+                      {PLATFORM_LABEL[p.platform]}
+                    </span>
                   </div>
-                );
-              })}
+                  <MetaBar
+                    label={p.item.label}
+                    sublabel={`Meta de ${fmtInt(p.item.goal)} ${p.item.unitLabel.toLowerCase()}`}
+                    actual={p.actual}
+                    goal={p.item.goal}
+                    unit={p.item.unitLabel.toLowerCase()}
+                    color={platformColor(p.platform)}
+                  />
+                  <div className="mt-3">
+                    <MetaBar
+                      label="Investimento"
+                      actual={capInvest(p.actualInvest, p.item.investimento)}
+                      goal={p.item.investimento}
+                      currency
+                      color="#64748b"
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </ChartCard>
         );

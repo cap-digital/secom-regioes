@@ -63,13 +63,30 @@ export interface RawProgramaticaRow {
   Investimento: number;
 }
 
+export interface RawPushRow {
+  Data: string;
+  "Região ": number | string; // chega como número (8 / 12 / 14)
+  "ID do Anúncio": number;
+  "Título": string;
+  "Descrição": string;
+  "Chamada para ação": string;
+  "Nome do Anunciante": string;
+  "Link de mídia": string;
+  "Visualizar link do informante": string;
+  Url: string;
+  Disparo: number; // métrica contratada (substitui impressões)
+  Cliques: number;
+  Investimento: number;
+  "Estratégia ": string;
+}
+
 export interface ApiResponse {
   success: boolean;
   google: RawGoogleRow[];
   tvConectada: RawGoogleRow[];
   spotify: RawSpotifyRow[];
   programaticaDeVideo: RawProgramaticaRow[];
-  pushNotification: unknown[];
+  pushNotification: RawPushRow[];
   timestamp: string;
 }
 
@@ -95,6 +112,7 @@ export interface NormalizedRow {
   strategy: string;
   investimento: number;
   impressions: number;
+  disparos: number; // Push Notification: disparos (métrica contratada)
   clicks: number;
   views: number; // platform's "visualizações"/listens metric
   reach: number;

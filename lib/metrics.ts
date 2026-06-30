@@ -4,10 +4,12 @@ import {
   PlatformId,
   RawGoogleRow,
   RawProgramaticaRow,
+  RawPushRow,
   RawSpotifyRow,
 } from "./types";
 
 const REGION_KEY = "Região";
+const PUSH_REGION_KEY = "Região "; // push usa a chave com espaço, valor numérico
 const STRATEGY_KEY = "Estratégia ";
 
 const num = (v: unknown): number => {
@@ -49,6 +51,7 @@ function normalizeGoogleLike(
     strategy: (r[STRATEGY_KEY] ?? "").trim(),
     investimento: num(r.Investimento),
     impressions,
+    disparos: 0,
     clicks: num(r.clicks),
     views: num(r.video_trueview_views),
     reach: 0,
@@ -74,6 +77,7 @@ function normalizeSpotify(r: RawSpotifyRow): NormalizedRow {
     strategy: (r[STRATEGY_KEY] ?? "").trim(),
     investimento: num(r.Investimento),
     impressions: num(r.ad_impressions),
+    disparos: 0,
     clicks: num(r.ad_set_clicks),
     views: num(r.ad_completes), // escutas completas
     reach: num(r.ad_reach),
@@ -100,6 +104,7 @@ function normalizeProgramatica(r: RawProgramaticaRow): NormalizedRow {
     strategy: (r[STRATEGY_KEY] ?? "").trim(),
     investimento: num(r.Investimento),
     impressions: num(r["Impressões"]),
+    disparos: 0,
     clicks: num(r.Cliques),
     views: num(r["Trueview views"]),
     reach: 0,
@@ -108,6 +113,35 @@ function normalizeProgramatica(r: RawProgramaticaRow): NormalizedRow {
     q50: num(r["50% Video assistido"]),
     q75: num(r["75% Video assistido"]),
     q100: num(r["Videos completos 100%"]),
+    watchTimeMillis: 0,
+  };
+}
+
+// Push Notification (MGID): métrica contratada é "Disparo", não impressões.
+// Região chega como número (8 / 12 / 14) na chave "Região " (com espaço).
+function normalizePush(r: RawPushRow): NormalizedRow {
+  const reg = num(r[PUSH_REGION_KEY]);
+  return {
+    platform: "pushNotification",
+    date: day(r.Data),
+    campaign: "",
+    adGroup: (r["Nome do Anunciante"] ?? "").trim(),
+    adName: (r["Título"] ?? "").trim(),
+    videoTitle: stripEmoji(r["Descrição"] ?? ""), // texto do criativo
+    videoUrl: (r["Link de mídia"] ?? "").trim(), // thumbnail
+    region: reg ? `REGIÃO ${reg}` : "",
+    strategy: (r[STRATEGY_KEY] ?? "").trim(),
+    investimento: num(r.Investimento),
+    impressions: 0,
+    disparos: num(r.Disparo),
+    clicks: num(r.Cliques),
+    views: 0,
+    reach: 0,
+    engagements: 0,
+    q25: 0,
+    q50: 0,
+    q75: 0,
+    q100: 0,
     watchTimeMillis: 0,
   };
 }
@@ -122,7 +156,7 @@ export function normalize(api: ApiResponse): Record<PlatformId, NormalizedRow[]>
     programaticaDeVideo: (api.programaticaDeVideo ?? []).map(
       normalizeProgramatica
     ),
-    pushNotification: [],
+    pushNotification: (api.pushNotification ?? []).map(normalizePush),
   };
 }
 
@@ -130,6 +164,7 @@ export function normalize(api: ApiResponse): Record<PlatformId, NormalizedRow[]>
 export interface Totals {
   investimento: number;
   impressions: number;
+  disparos: number;
   clicks: number;
   views: number;
   reach: number;
@@ -146,6 +181,7 @@ export function sumRows(rows: NormalizedRow[]): Totals {
     (acc, r) => {
       acc.investimento += r.investimento;
       acc.impressions += r.impressions;
+      acc.disparos += r.disparos;
       acc.clicks += r.clicks;
       acc.views += r.views;
       acc.reach += r.reach;
@@ -160,6 +196,7 @@ export function sumRows(rows: NormalizedRow[]): Totals {
     {
       investimento: 0,
       impressions: 0,
+      disparos: 0,
       clicks: 0,
       views: 0,
       reach: 0,

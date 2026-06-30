@@ -37,6 +37,7 @@ function actualFor(rows: NormalizedRow[], item: MetaItem): number {
     impressions: "impressions",
     views: "views",
     completes: "q100",
+    disparos: "disparos",
   };
   return rows.reduce((s, r) => s + (r[key[item.unit]] as number), 0);
 }
